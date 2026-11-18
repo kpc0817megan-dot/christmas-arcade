@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>THE CHRISTMAS MYSTERY｜聖誕像素解謎大冒險</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+TC:wght@400;700;900&display=swap');
+:root{--ink:#182238;--cream:#fff4d6;--red:#c94b45;--green:#397b58;--gold:#f3c75b;--blue:#527eae}
+*{box-sizing:border-box}body{margin:0;background:#17243a;color:var(--ink);font-family:'Noto Sans TC',sans-serif}
+button{font:inherit;cursor:pointer;border:3px solid #182238;border-radius:5px;background:#f5ca63;color:#182238;font-weight:900;padding:11px 15px;box-shadow:0 5px 0 #182238;touch-action:manipulation}
+button:active{transform:translateY(4px);box-shadow:0 1px 0 #182238}
+button.secondary{background:#d9e6ef}button.green{background:#80c68b}button.red{background:#e78b7d}
+#app{max-width:1100px;margin:auto;min-height:100vh;background:#f7edcf;border-left:6px solid #101b2e;border-right:6px solid #101b2e}
+header{background:#263c57;color:#fff4d6;padding:18px 16px;text-align:center;border-bottom:6px solid #101b2e}
+.logo{font:14px 'Press Start 2P',monospace;line-height:1.8;color:#f5ca63;text-shadow:3px 3px #8d413d}
+header p{margin:8px 0 0;font-size:13px;color:#d9e6ef}
+nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:12px;background:#d9c99d;border-bottom:4px solid #182238}
+main{padding:16px}.panel{background:#fff8e7;border:4px solid #263c57;box-shadow:6px 6px 0 #b6a77f;padding:16px;margin-bottom:16px}
+h1,h2,h3{margin:0 0 12px}h2{font-size:22px}h3{font-size:17px}.pixel{font-family:'Press Start 2P',monospace;font-size:11px;line-height:1.8}
+.hero{background:linear-gradient(#6d91b8 0 48%,#d9e8ed 48% 58%,#789c69 58%);border:4px solid #182238;min-height:190px;position:relative;overflow:hidden;display:flex;align-items:end;justify-content:center;padding:18px}
+.hero:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 34px,#ffffff12 35px 36px),repeating-linear-gradient(0deg,transparent 0 34px,#ffffff12 35px 36px)}
+.hero .sun{position:absolute;right:12%;top:18px;width:44px;height:44px;background:#f5ca63;box-shadow:0 0 0 8px #f5ca6333}
+.hero .tree{position:absolute;bottom:25px;width:0;height:0;border-left:28px solid transparent;border-right:28px solid transparent;border-bottom:74px solid #27654d;filter:drop-shadow(0 7px #182238)}
+.hero .tree:after{content:"";position:absolute;top:52px;left:-8px;width:16px;height:22px;background:#8a543b}
+.hero .tree.t1{left:12%}.hero .tree.t2{right:18%;transform:scale(.8)}
+.heroTitle{position:relative;background:#fff4d6;border:4px solid #182238;padding:12px 16px;text-align:center;box-shadow:5px 5px 0 #182238}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.week{border:4px solid #263c57;background:#fff8e7;overflow:hidden}
+.weekArt{height:105px;position:relative;display:flex;align-items:center;justify-content:center;border-bottom:4px solid #263c57;font-size:42px}
+.weekArt:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 18px,#ffffff15 19px 20px),repeating-linear-gradient(0deg,transparent 0 18px,#0000000b 19px 20px)}
+.weekBody{padding:12px}.weekBody p{font-size:13px;min-height:38px}.weekBody button{width:100%}
+.meter{height:16px;background:#d8d0b9;border:3px solid #182238;margin:8px 0}.meter span{display:block;height:100%;background:#68a977;width:0}
+.small{font-size:12px;color:#526078;line-height:1.7}.status{display:inline-block;padding:4px 7px;background:#e9dcae;border:2px solid #182238;font-size:11px;font-weight:bold}
+#gameWrap{display:none;background:#182238;padding:10px;border:4px solid #182238}
+#gameTop{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#fff4d6;font-size:12px;padding:4px 0 10px}
+canvas{display:block;width:100%;height:auto;image-rendering:pixelated;border:4px solid #f5ca63;background:#7da6c6;touch-action:none}
+#gameBottom{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding-top:10px;color:#fff4d6;font-size:12px}
+.controls{display:none;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.controls button{padding:16px 4px;font-size:16px}
+.modal{position:fixed;inset:0;background:#101b2edd;display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+.dialog{background:#fff4d6;border:5px solid #182238;box-shadow:8px 8px 0 #0008;max-width:520px;width:100%;padding:20px;max-height:90vh;overflow:auto}
+.dialog p{line-height:1.7}.answers{display:grid;gap:9px}.answers button{text-align:left;background:#e7e0c9}
+input{width:100%;padding:12px;border:3px solid #182238;font-size:18px;margin:8px 0}
+footer{text-align:center;color:#d9e6ef;background:#263c57;padding:15px;font-size:11px}
+@media(max-width:650px){main{padding:10px}.cards{grid-template-columns:1fr}.hero{min-height:160px}.logo{font-size:11px}.controls{display:grid}#gameBottom .desktopHint{display:none}}
+</style>
+</head>
+<body>
+<div id="app">
+<header><div class="logo">THE CHRISTMAS<br>MYSTERY</div><p>聖誕像素解謎大冒險 · 四週闖關集線索</p></header>
+<nav><button class="secondary" onclick="showHome()">首頁</button><button class="secondary" onclick="showClues()">我的線索</button><button class="secondary" onclick="showRules()">遊戲規則</button><button class="secondary" onclick="showFinal()">最終解謎</button></nav>
+<main id="home">
+ <section class="hero"><div class="sun"></div><div class="tree t1"></div><div class="tree t2"></div><div class="heroTitle"><div class="pixel">READY PLAYER?</div><h2 style="margin:8px 0 0">聖誕節的終極謎題</h2><div class="small">完成四週挑戰，收集線索，解開最後答案！</div></div></section>
+ <section class="panel"><h2>🎄 任務公告</h2><p>聖誕驚喜箱被四道謎題鎖住了！每週完成一個像素跑酷關卡，就能拿到一張線索卡。集齊四張線索，解開最終密碼，就能取得本活動抽獎資格。</p><div class="small">本版本為可直接遊玩的試玩版：進度保存在目前裝置的瀏覽器中。正式學校版的 Google 登入、跨裝置雲端同步與管理後台需另接後端服務。</div></section>
+ <section class="panel"><h2>我的冒險進度</h2><div id="progressText">已完成 0 / 4 週</div><div class="meter"><span id="progressBar"></span></div><div class="small" id="raffleState">完成四週並解開最終謎題，即取得抽獎資格。</div></section>
+ <h2 style="margin:18px 0 12px">四週關卡地圖</h2><div class="cards" id="weeks"></div>
+</main>
+<main id="gamePage" style="display:none">
+ <div id="gameWrap">
+  <div id="gameTop"><span id="levelName">WEEK 01</span><span id="score">★ 0</span><span id="lives">♥ ♥ ♥</span><span id="segment">簡單區段</span></div>
+  <canvas id="game" width="800" height="420"></canvas>
+  <div id="gameBottom"><span>← → 移動　點擊／↑ 跳躍　↓ 滑行</span><button class="secondary" onclick="pauseGame()">暫停</button></div>
+  <div class="controls"><button id="leftBtn" class="secondary">◀</button><button id="jumpBtn">跳躍</button><button id="slideBtn" class="secondary">滑行</button><button id="rightBtn" class="secondary">▶</button></div>
+ </div>
+ <div class="panel" id="gameIntro"><h2 id="introTitle">關卡準備中</h2><p id="introDesc"></p><button onclick="startGame()">開始闖關 ▶</button> <button class="secondary" onclick="showHome()">返回地圖</button></div>
+</main>
+<main id="cluePage" style="display:none"><section class="panel"><h2>🧩 我的線索收藏</h2><p>每週完成關卡後會獲得一張線索卡。四張線索一起使用，才能解開最終密碼。</p><div id="clueList"></div></section></main>
+<main id="rulesPage" style="display:none"><section class="panel"><h2>📜 遊戲規則</h2><ol><li>每週完成一個關卡，依序收集四張線索卡。</li><li>關卡包含簡單、普通、困難三個區段。</li><li>使用左右按鈕移動；點擊畫面或跳躍鍵跳躍；向下滑動或滑行鍵滑行。</li><li>碰到障礙會扣除生命，生命用完可重新挑戰。</li><li>每週可重玩已解鎖的關卡，已取得線索不會消失。</li><li>完成四週後，輸入四張線索提示所指向的四位數密碼。</li></ol><p class="small">活動正式版的開放日期、學校帳號驗證與抽獎名單，需由主辦單位在正式伺服器設定。</p></section></main>
+<main id="finalPage" style="display:none"><section class="panel"><h2>🎰 FINAL MYSTERY</h2><p>四週線索已經收集齊全了嗎？依照線索卡上的提示，輸入四位數密碼，打開聖誕驚喜箱！</p><div id="finalHint" class="small"></div><input id="finalCode" inputmode="numeric" maxlength="4" placeholder="輸入四位數密碼"><button onclick="submitFinal()">確認答案</button><div id="finalResult" style="margin-top:12px;font-weight:900"></div></section></main>
+</main>
+<footer>THE CHRISTMAS MYSTERY · ORIGINAL PIXEL ARCADE GAME</footer>
+</div>
+<div class="modal" id="modal"><div class="dialog" id="dialog"></div></div>
+<script>
+const themes=[
+ {name:"雪夜聖誕村",title:"WEEK 01 · CHRISTMAS VILLAGE",desc:"在雪夜村莊奔跑，回答聖誕節與校園趣味問題，找回第一張線索卡。",sky:"#6b88ad",ground:"#e8edf0",accent:"#b94d4b",decor:"#286449",emoji:"🎄",clue:"第一個數字是聖誕樹上星星的數量（提示：一顆）。",digit:"1"},
+ {name:"冰雪洞穴",title:"WEEK 02 · FROZEN CAVE",desc:"穿過冰柱與水晶平台，觀察場景、尋找隱藏的冰晶符號。",sky:"#8fc8dc",ground:"#d9f0f3",accent:"#8066a7",decor:"#4f9fb5",emoji:"❄️",clue:"第二個數字是雪人鼻子的形狀所代表的數字（胡蘿蔔有三個角）。",digit:"3"},
+ {name:"糖果森林",title:"WEEK 03 · CANDY FOREST",desc:"穿越糖果樹與薑餅屋，收集指定糖果並挑戰移動平台。",sky:"#e9a5a0",ground:"#f3dcae",accent:"#c65373",decor:"#579b77",emoji:"🍬",clue:"第三個數字是糖果拐杖上紅白相間的條紋數（四條）。",digit:"4"},
+ {name:"星空聖誕城堡",title:"WEEK 04 · STAR CASTLE",desc:"闖過最後一段城堡跑酷，完成綜合謎題，集齊最後一張線索卡。",sky:"#514d80",ground:"#b9b5d7",accent:"#d3a84d",decor:"#454064",emoji:"🏰",clue:"第四個數字是聖誕老人雪橇的前方有幾隻領頭馴鹿（傳統故事常見答案：一隻領頭的魯道夫）。",digit:"1"}
+];
+const questions=[
+ [{q:"聖誕節通常在幾月幾日？",a:["12月25日","1月1日","2月14日"],c:0},{q:"聖誕老人傳說中通常乘坐什麼？",a:["火車","雪橇","熱氣球"],c:1},{q:"聖誕樹頂端常見的裝飾是？",a:["星星","雨傘","足球"],c:0},{q:"常見的聖誕老人服裝主色是？",a:["紫色","紅色","橘色"],c:1},{q:"聖誕節常見的植物裝飾是？",a:["松枝","仙人掌","荷花"],c:0},{q:"聖誕歌曲 Jingle Bells 常出現什麼聲音？",a:["鈴鐺","海浪","火車汽笛"],c:0},{q:"金門高中位於哪個縣？",a:["金門縣","澎湖縣","連江縣"],c:0},{q:"金門高中是什麼類型的學校？",a:["高中","國小","大學"],c:0},{q:"校園活動通常由哪個學生自治組織協助規劃？",a:["班聯會","郵局","航空公司"],c:0},{q:"金門位於臺灣哪個方向的離島區域？",a:["西北方","東南方","東北方"],c:0},{q:"在學校遇到活動公告，最適合先做什麼？",a:["看清楚時間與規則","直接猜答案","忽略公告"],c:0},{q:"團隊闖關最重要的是？",a:["互相合作","故意干擾","不看提示"],c:0}],
+ [{q:"冰塊遇熱通常會怎樣？",a:["融化","變成木頭","長出葉子"],c:0},{q:"哪個形狀最像雪花常見的對稱結構？",a:["六向對稱","三角形車輪","長方形"],c:0},{q:"在一排藍、白、藍、白之後，下一個是？",a:["藍","紅","黃"],c:0}],
+ [{q:"糖果常見的主要味覺是？",a:["甜","鹹","苦"],c:0},{q:"若收集順序是紅、綠、紅、綠，下一個是？",a:["紅","藍","黃"],c:0},{q:"三顆糖果再拿到兩顆，總共幾顆？",a:["4","5","6"],c:1}],
+ [{q:"四週線索應該怎麼使用？",a:["依序組合","全部丟掉","只看最後一張"],c:0},{q:"最終密碼通常要根據什麼找出？",a:["收集到的提示","隨機亂猜","角色顏色"],c:0},{q:"成功解謎後會得到什麼？",a:["抽獎資格","無限生命","校長室鑰匙"],c:0}]
+];
+let data=JSON.parse(localStorage.getItem("christmasMysterySave")||'{"done":[false,false,false,false],"clues":[null,null,null,null],"final":false,"score":0}');
+function save(){localStorage.setItem("christmasMysterySave",JSON.stringify(data));}
+let current=0,game=null,raf=null,paused=false;
+function page(id){["home","gamePage","cluePage","rulesPage","finalPage"].forEach(x=>document.getElementById(x).style.display=x===id?"block":"none");}
+function showHome(){stopGame();page("home");renderHome()}
+function renderHome(){
+ document.getElementById("progressText").textContent=`已完成 ${data.done.filter(Boolean).length} / 4 週`;
+ document.getElementById("progressBar").style.width=(data.done.filter(Boolean).length*25)+"%";
+ document.getElementById("raffleState").textContent=data.final?"🎉 最終謎題已解開！試玩版已記錄完成狀態。":"完成四週並解開最終謎題，即取得抽獎資格。";
+ document.getElementById("weeks").innerHTML=themes.map((t,i)=>`<div class="week"><div class="weekArt" style="background:linear-gradient(${t.sky},${t.ground})"><span style="font-size:46px;filter:drop-shadow(3px 3px #263c57)">${t.emoji}</span><span style="position:absolute;right:10px;bottom:6px;font:9px monospace;color:#263c57">STAGE 0${i+1}</span></div><div class="weekBody"><b>${t.title}</b><p>${t.desc}</p><span class="status">${data.done[i]?"已通關 ✓":i===0||data.done[i-1]?"已開放":"尚未解鎖"}</span><p><button ${i>0&&!data.done[i-1]?"disabled":""} onclick="openLevel(${i})">${data.done[i]?"再次挑戰":"進入關卡"}</button></p></div></div>`).join("");
+}
+function openLevel(i){current=i;page("gamePage");document.getElementById("gameWrap").style.display="none";document.getElementById("gameIntro").style.display="block";document.getElementById("introTitle").textContent=themes[i].title;document.getElementById("introDesc").textContent=themes[i].desc+" 本關分為簡單、普通、困難三個區段，完成終點任務即可取得線索。";let b=document.querySelector("#gameIntro button");b.textContent="開始闖關 ▶";b.onclick=startGame;}
+function showClues(){stopGame();page("cluePage");document.getElementById("clueList").innerHTML=themes.map((t,i)=>`<div class="panel"><b>第 ${i+1} 週 ${t.emoji}</b><p>${data.clues[i]||"尚未取得，完成本週關卡即可解鎖。"}</p></div>`).join("")}
+function showRules(){stopGame();page("rulesPage")}
+function showFinal(){stopGame();page("finalPage");let n=data.clues.filter(Boolean).length;document.getElementById("finalHint").textContent=`已取得 ${n}/4 張線索。`+(n===4?"四張線索已集齊，請依序輸入四個數字。":"請先完成尚未取得的週次線索。");document.getElementById("finalResult").textContent=data.final?"🎉 你已成功解開聖誕驚喜箱！":""}
+function modal(html){document.getElementById("dialog").innerHTML=html;document.getElementById("modal").style.display="flex"}
+function closeModal(){document.getElementById("modal").style.display="none"}
+function submitFinal(){if(data.clues.some(x=>!x)){document.getElementById("finalResult").textContent="請先收集四週線索！";return}let v=document.getElementById("finalCode").value;if(v==="1341"){data.final=true;save();document.getElementById("finalResult").textContent="🎉 JACKPOT！恭喜解開最終謎題！";renderHome()}else document.getElementById("finalResult").textContent="密碼不正確，再仔細看看四張線索卡！"}
+function startGame(){document.getElementById("gameIntro").style.display="none";document.getElementById("gameWrap").style.display="block";initGame();loop()}
+function initGame(){game={x:75,y:290,vy:0,on:false,slide:0,scroll:0,score:0,lives:3,frame:0,dist:0,obstacles:[],coins:[],ground:340,questionAt:0,checkpoint:0,done:false,keys:{}};for(let i=0;i<24;i++){let x=430+i*240;game.obstacles.push({x,y:300+(i%3)*12,w:28+(i%2)*12,h:40-(i%3)*5,kind:i%3}) ;game.coins.push({x:x+100,y:245-(i%2)*35,taken:false})}document.getElementById("levelName").textContent=themes[current].title;updateHUD()}
+function updateHUD(){document.getElementById("score").textContent="★ "+game.score;document.getElementById("lives").textContent="♥ ".repeat(game.lives);document.getElementById("segment").textContent=game.dist<1500?"簡單區段":game.dist<3300?"普通區段":"困難區段"}
+function stopGame(){if(raf)cancelAnimationFrame(raf);raf=null;game=null}
+function pauseGame(){if(!game)return;paused=!paused;if(paused)modal('<h2>暫停中</h2><p>休息一下，準備好再繼續！</p><button onclick="closeModal();paused=false;loop()">繼續遊戲</button> <button class="secondary" onclick="closeModal();stopGame();showHome()">離開關卡</button>');else closeModal()}
+const canvas=document.getElementById("game"),ctx=canvas.getContext("2d");
+function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),w,h)}
+function draw(){
+ let t=themes[current],s=game.scroll;ctx.clearRect(0,0,800,420);rect(0,0,800,420,t.sky);
+ // pixel clouds and layered hills
+ for(let i=0;i<7;i++){let x=((i*150-s*.18)%950+950)%950-80;rect(x,65+(i%3)*25,55,16,"#ffffffb8");rect(x+12,53+(i%3)*25,28,14,"#ffffffb8")}
+ for(let i=0;i<6;i++){let x=((i*190-s*.35)%1000+1000)%1000-100;rect(x,245,110,95,t.decor);rect(x+25,220,55,25,t.decor)}
+ // far trees
+ for(let i=0;i<10;i++){let x=((i*105-s*.55)%1000+1000)%1000-80;rect(x+18,240,12,80,"#80543c");rect(x,205,48,45,"#276449");rect(x+8,185,32,25,"#39805a")}
+ // ground pixel tiles
+ rect(0,game.ground,800,80,t.ground);for(let x=-((s%40));x<820;x+=40){rect(x,game.ground,38,7,t.accent);rect(x+4,game.ground+12,4,4,"#ffffff88")}
+ // platforms
+ for(let i=0;i<7;i++){let x=((i*190-s*.9)%950+950)%950;rect(x,265-(i%3)*28,70,12,t.accent);rect(x,277-(i%3)*28,70,5,"#263c57")}
+ // obstacles
+ game.obstacles.forEach(o=>{let x=o.x-s;if(x>-50&&x<850){if(o.kind===0){rect(x,game.ground-o.h,o.w,o.h,"#80543c");rect(x-5,game.ground-o.h-9,o.w+10,10,t.decor)}else if(o.kind===1){rect(x,game.ground-28,o.w,28,"#9bcbd7");rect(x+5,game.ground-35,o.w-10,8,"#eafaff")}else{rect(x,game.ground-18,o.w,18,t.accent);for(let j=0;j<o.w;j+=12)rect(x+j,game.ground-24,6,6,"#fff0c8")}}});
+ game.coins.forEach(c=>{let x=c.x-s;if(!c.taken&&x>-20&&x<820){rect(x+5,c.y,12,18,"#f3c75b");rect(x+8,c.y+3,6,12,"#fff1a6");}});
+ // player shadow and character
+ let px=game.x,py=game.y;rect(px+3,game.ground-4,30,5,"#0003");
+ if(game.slide>0){rect(px,py+18,34,18,"#b94d4b");rect(px+20,py+4,15,17,"#f0c39a");rect(px+22,py,12,7,"#e8e8e8")}
+ else{rect(px+5,py+12,24,25,"#b94d4b");rect(px+7,py+4,21,15,"#f0c39a");rect(px+4,py,25,9,"#e9e5d6");rect(px+3,py+8,28,5,"#b94d4b");rect(px+8,py+36,8,9,"#324a73");rect(px+21,py+36,8,9,"#324a73");rect(px+24,py+12,4,4,"#182238")}
+ // foreground snowflakes
+ for(let i=0;i<22;i++){let x=(i*71-s*1.4+8000)%800,y=(i*47+game.frame*1.3)%420;rect(x,y,3,3,"#ffffffb0")}
+}
+function loop(){if(!game||paused)return;game.frame++;let k=game.keys;let speed=3.0+(game.dist>1500?0.5:0)+(game.dist>3300?0.5:0);if(k.left)game.x-=3;if(k.right)game.x+=3;game.x=Math.max(15,Math.min(760,game.x));game.scroll+=speed;game.dist+=speed;game.vy+=.55;game.y+=game.vy;if(game.y>=game.ground-50){game.y=game.ground-50;game.vy=0;game.on=true}else game.on=false;if(game.slide>0)game.slide--;
+ game.coins.forEach(c=>{if(!c.taken&&Math.abs(c.x-game.scroll-game.x)<30&&Math.abs(c.y-game.y)<55){c.taken=true;game.score+=10}});
+ game.obstacles.forEach(o=>{let ox=o.x-game.scroll;if(ox<game.x+28&&ox+o.w>game.x+4&&game.y+42>game.ground-o.h&&game.y<game.ground-4&&!game.slide){if(!o.hit){o.hit=true;game.lives--;updateHUD();if(game.lives<=0){paused=true;modal('<h2>再試一次！</h2><p>這段路有點難，重新挑戰就好。</p><button onclick="closeModal();startGame()">重新開始</button> <button class="secondary" onclick="closeModal();showHome()">返回地圖</button>')}else{game.x=Math.max(20,game.x-25);game.vy=-5}}}if(ox<-60)o.hit=false});
+ if(game.dist>1600&&game.checkpoint===0){game.checkpoint=1;askCheckpoint(0)}
+ if(game.dist>3400&&game.checkpoint===1){game.checkpoint=2;askCheckpoint(1)}
+ if(game.dist>5000){draw();finishLevel();return}
+ updateHUD();draw();raf=requestAnimationFrame(loop)}
+function askCheckpoint(stage){paused=true;let q=questions[current][(stage+current)%questions[current].length];modal(`<div class="pixel">CHECK POINT ${stage+1}</div><h2>${stage===0?"簡單區段完成！":"普通區段完成！"}</h2><p>${q.q}</p><div class="answers">${q.a.map((a,i)=>`<button onclick="answerCheckpoint(${i},${q.c})">${String.fromCharCode(65+i)}. ${a}</button>`).join("")}</div><p class="small">答對可獲得額外分數，答錯仍可繼續冒險。</p>`)}
+function answerCheckpoint(choice,correct){if(choice===correct)game.score+=50;closeModal();paused=false;loop()}
+function finishLevel(){if(game.done)return;game.done=true;paused=true;let idx=current;data.done[idx]=true;data.clues[idx]=themes[idx].clue;save();document.getElementById("gameWrap").style.display="none";document.getElementById("gameIntro").style.display="block";document.getElementById("introTitle").textContent="LEVEL CLEAR! 🎉";document.getElementById("introDesc").innerHTML=`恭喜完成 ${themes[idx].title}！<br><br><b>本週線索已解鎖：</b><br>${themes[idx].clue}<br><br>本關得分：${game.score} 分。`;document.querySelector("#gameIntro button").textContent="返回關卡地圖";document.querySelector("#gameIntro button").onclick=()=>{showHome()};}
+function bindHold(id,key){let el=document.getElementById(id);el.addEventListener("pointerdown",e=>{e.preventDefault();if(game)game.keys[key]=true});["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,()=>{if(game)game.keys[key]=false}))}
+bindHold("leftBtn","left");bindHold("rightBtn","right");
+document.getElementById("jumpBtn").addEventListener("pointerdown",()=>jump());
+document.getElementById("slideBtn").addEventListener("pointerdown",()=>slide());
+function jump(){if(game&&game.on){game.vy=-11;game.on=false}}
+function slide(){if(game)game.slide=24}
+canvas.addEventListener("pointerdown",e=>{if(!game)return;let r=canvas.getBoundingClientRect();let y=(e.clientY-r.top)*canvas.height/r.height;if(y<canvas.height*.78)jump()});
+canvas.addEventListener("touchstart",e=>{if(!game)return;let t=e.touches[0],r=canvas.getBoundingClientRect();if(t.clientY-r.top>r.height*.7)slide()},{passive:true});
+let touchY=null;canvas.addEventListener("touchstart",e=>touchY=e.touches[0].clientY,{passive:true});canvas.addEventListener("touchend",e=>{if(touchY!==null&&e.changedTouches[0].clientY-touchY>25)slide();touchY=null},{passive:true});
+document.addEventListener("keydown",e=>{if(!game)return;if(["ArrowLeft","a"].includes(e.key))game.keys.left=true;if(["ArrowRight","d"].includes(e.key))game.keys.right=true;if(["ArrowUp"," "].includes(e.key))jump();if(e.key==="ArrowDown")slide()});
+document.addEventListener("keyup",e=>{if(!game)return;if(["ArrowLeft","a"].includes(e.key))game.keys.left=false;if(["ArrowRight","d"].includes(e.key))game.keys.right=false});
+renderHome();
+</script>
+</body></html>
