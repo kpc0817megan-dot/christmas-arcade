@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#18233f">
+<title>KMSH Christmas Arcade</title>
+<style>
+:root{--navy:#18233f;--cream:#fff2d2;--red:#b94d50;--gold:#f3c96b;--green:#47795c;--blue:#30496b}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--navy);color:var(--cream);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+button{font:inherit;font-weight:900;color:var(--navy);background:var(--gold);border:3px solid var(--navy);box-shadow:4px 4px 0 #080f20;padding:10px 14px;cursor:pointer;touch-action:manipulation}
+button:active{transform:translate(2px,2px);box-shadow:2px 2px 0 #080f20}
+button:focus-visible{outline:3px solid white;outline-offset:3px}
+.hidden{display:none!important}
+#home{max-width:960px;margin:auto;padding:20px 16px 38px}
+.brand{display:flex;align-items:center;gap:10px;font-size:13px;letter-spacing:2px;font-weight:1000}
+.logo{width:38px;height:38px;display:grid;place-items:center;background:var(--cream);color:var(--red);border:3px solid var(--gold);box-shadow:3px 3px 0 #080f20;font-size:12px}
+.hero{position:relative;overflow:hidden;margin:20px 0 18px;padding:22px 18px;border:4px solid var(--cream);background:#30476a;box-shadow:7px 7px 0 #0b1327}
+.hero:after{content:"✦  ❄  ✦  ·  ❄";position:absolute;right:14px;top:12px;color:#fff2c8;font-size:17px}
+.eyebrow{font-size:11px;letter-spacing:2px;color:#f8df9e}
+h1{font-size:clamp(27px,7vw,48px);line-height:1.03;margin:10px 0;color:#ffe39a;text-shadow:3px 3px #8d3d4b}
+.hero p{font-size:12px;line-height:1.8;margin:8px 0 0}
+.progress{height:13px;margin:15px 0 6px;background:#101a30;border:2px solid var(--cream)}
+#progressFill{height:100%;width:0;background:var(--gold);transition:width .25s}
+#progressText{font-size:11px;color:#f7e8c8}
+.sectionTitle{font-size:15px;color:#ffe39a;margin:22px 0 12px}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.level{position:relative;min-height:154px;padding:13px;background:#263956;border:3px solid var(--cream);box-shadow:4px 4px 0 #0b1327}
+.level .week{font-size:10px;letter-spacing:1px;color:#f4d48a}
+.level h3{font-size:15px;color:#ffe39a;margin:7px 0}
+.level p{font-size:11px;line-height:1.65;color:#f4e8cf;min-height:43px;margin:0 0 10px}
+.level button{width:100%;font-size:11px;padding:9px}
+.level .stamp{position:absolute;right:10px;top:10px;color:#9fe0b4;font-size:10px;font-weight:bold}
+.homeActions{display:flex;gap:9px;flex-wrap:wrap;margin-top:17px}
+.homeActions button{font-size:11px}
+.note{font-size:10px;line-height:1.8;color:#d7d0bd;margin-top:17px}
+#game{position:fixed;inset:0;background:#111a30;display:flex;align-items:center;justify-content:center;padding:8px}
+#gameInner{width:min(100vw,177.78vh);height:min(100vh,56.25vw);display:flex;flex-direction:column;gap:6px}
+#hud{height:34px;flex:0 0 34px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:clamp(9px,1.5vw,13px);padding:0 3px}
+#hud button{padding:4px 8px;font-size:10px;border-width:2px;box-shadow:2px 2px 0 #080f20}
+#stage{position:relative;flex:1;min-height:0;border:4px solid var(--cream);box-shadow:5px 5px 0 #080f20;overflow:hidden}
+canvas{display:block;width:100%;height:100%;image-rendering:pixelated;touch-action:none}
+#touch{height:60px;flex:0 0 60px;display:flex;align-items:center;justify-content:space-between;padding:0 5px;gap:8px}
+.touchgroup{display:flex;gap:8px}
+.touchbtn{min-width:58px;height:48px;border:3px solid var(--cream);background:#30476a;color:var(--cream);box-shadow:3px 3px 0 #080f20;font-size:12px}
+#overlay{position:absolute;inset:0;display:grid;place-items:center;background:#10182ddd;padding:12px;text-align:center;z-index:2}
+.panel{width:min(94%,460px);max-height:95%;overflow:auto;padding:18px;background:var(--cream);color:var(--navy);border:4px solid var(--red);box-shadow:6px 6px 0 #080f20}
+.panel h2{margin:0 0 8px;color:#a33e49;font-size:clamp(17px,3vw,25px)}
+.panel p{font-size:12px;line-height:1.8;margin:8px 0 13px}
+.panel .tiny{font-size:10px;color:#536078}
+.panel button{font-size:11px;margin:3px}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.answers button{padding:10px 6px;font-size:11px;margin:0}
+.feedback{min-height:18px;font-size:11px;font-weight:bold;color:#a33e49;margin-top:9px}
+#rotate{position:fixed;inset:0;z-index:10;background:var(--navy);display:none;place-items:center;text-align:center;padding:22px}
+#rotate .panel{max-width:330px}
+@media(orientation:portrait) and (max-width:900px){#game{display:none}#rotate{display:grid}}
+@media(max-width:480px){#home{padding:16px 13px 30px}.cards{gap:9px}.level{padding:10px;min-height:160px}.hero{padding:19px 14px}.touchbtn{min-width:53px;font-size:11px}}
+</style>
+</head>
+<body>
+<section id="home">
+ <div class="brand"><div class="logo">KMSH</div><span>KMSH CHRISTMAS CHALLENGE</span></div>
+ <div class="hero">
+  <div class="eyebrow">FOUR WEEKS · FOUR CLUES · ONE FINAL ANSWER</div>
+  <h1>CHRISTMAS<br>ARCADE</h1>
+  <p>四週、四個關卡。完成挑戰並回答問題，收集最後謎題的線索！</p>
+  <div class="progress"><div id="progressFill"></div></div>
+  <div id="progressText">已完成 0 / 4 週</div>
+ </div>
+ <h2 class="sectionTitle">選擇本週關卡 SELECT A WEEK</h2>
+ <div class="cards" id="levelCards"></div>
+ <div class="homeActions">
+  <button id="finalBtn">查看最終謎題</button>
+  <button id="resetBtn" style="background:#d8e4ef">重設本機進度</button>
+  <button id="adminBtn" style="background:#d8e4ef">管理功能說明</button>
+ </div>
+ <div class="note">玩法：手機請橫向遊玩。左側按鈕控制方向，右側按住跳躍或滑行；也可使用鍵盤方向鍵及空白鍵。碰到障礙物會退回一小段，可重新挑戰。<br>目前版本以本機瀏覽器儲存進度；學校 Google 登入、跨裝置同步、管理員權限與抽獎名單匯出尚未連接雲端後台。</div>
+</section>
+
+<section id="game" class="hidden">
+ <div id="gameInner">
+  <div id="hud"><span id="weekLabel">WEEK 01</span><span id="taskLabel">完成路線並抵達終點</span><span id="distanceLabel">0%</span><button id="exitBtn">離開</button></div>
+  <div id="stage"><canvas id="c" width="960" height="540"></canvas><div id="overlay" class="hidden"><div class="panel" id="panel"></div></div></div>
+  <div id="touch">
+   <div class="touchgroup"><button class="touchbtn" id="left">◀ 左</button><button class="touchbtn" id="right">右 ▶</button></div>
+   <div class="touchgroup"><button class="touchbtn" id="slide">滑行</button><button class="touchbtn" id="jump">跳躍 ▲</button></div>
+  </div>
+ </div>
+</section>
+<div id="rotate"><div class="panel"><h2>請將手機轉成橫向</h2><p>遊戲畫面採用橫向 16:9，旋轉手機後就能開始挑戰。</p><div style="font-size:38px">↻ 📱</div></div></div>
+
+<script>
+(()=>{
+"use strict";
+const $=id=>document.getElementById(id);
+const LEVELS=[
+ {name:"雪夜聖誕村",place:"雪花小鎮",clue:"聖",intro:"小鎮的聖誕燈突然熄滅了！穿過積雪街道，找到村口的點燈檢查站。",mission:"跳過木箱與冰刺，滑過低垂燈串，抵達村口。",question:"哪一種植物常被稱為「聖誕紅」？",answers:["一品紅","玫瑰","向日葵","蘭花"],correct:0,clueLine:"第一個字：聖",obstacles:["box","snow","spike","lights"],sky:"#9bc9df",ground:"#eaf4ee",accent:"#bd4d4d",far:"#6f9b9d"},
+ {name:"冰雪洞穴",place:"冰晶洞穴",clue:"誕",intro:"通往下一站的捷徑被冰封住了！穿過洞穴，找到藏在冰晶深處的檢查站。",mission:"避開冰柱與裂冰，抓準時機跳過洞穴障礙。",question:"水結冰後，會變成哪一種狀態？",answers:["固態","液態","氣態","完全消失"],correct:0,clueLine:"第二個字：誕",obstacles:["icicle","crack","icebox","icicle"],sky:"#6599b8",ground:"#d9f1f2",accent:"#8ee4ee",far:"#477d9a"},
+ {name:"糖果森林",place:"甜點森林",clue:"快",intro:"糖果森林的路標被打亂了！沿著糖果小徑前進，找回正確的方向。",mission:"跳過果凍方塊與糖果杖，注意森林裡的低矮障礙。",question:"紅色與黃色顏料混合，通常會變成什麼顏色？",answers:["橘色","紫色","綠色","藍色"],correct:0,clueLine:"第三個字：快",obstacles:["candy","jelly","candy","low"],sky:"#8cbd8a",ground:"#d8e6a8",accent:"#f5a5bd",far:"#4e8b62"},
+ {name:"星空聖誕城堡",place:"星光城堡",clue:"樂",intro:"最後一座城堡就在前方！通過最後的障礙，完成這趟聖誕任務。",mission:"綜合跳躍與滑行技巧，穿過城堡入口抵達終點。",question:"四週收集到的四個字，應該怎麼使用？",answers:["依序組成一句祝福","隨機排列","只選一個字","全部丟掉"],correct:0,clueLine:"第四個字：樂",obstacles:["gate","low","box","gate"],sky:"#35466f",ground:"#a8b5d8",accent:"#f4d16b",far:"#27375f"}
+];
+const STORAGE="kmsh_christmas_arcade_v3";
+let progress=loadProgress(),game=null,raf=0;
+const keys={left:false,right:false,slide:false,jump:false};
+function loadProgress(){try{const p=JSON.parse(localStorage.getItem(STORAGE)||"{}");return{done:Array.isArray(p.done)?p.done.filter(n=>Number.isInteger(n)&&n>=0&&n<4):[],clues:Array.isArray(p.clues)?p.clues.slice(0,4):[]}}catch(e){return{done:[],clues:[]}}}
+function save(){try{localStorage.setItem(STORAGE,JSON.stringify(progress))}catch(e){}}
+function renderHome(){
+ const n=progress.done.length;$("progressFill").style.width=(n*25)+"%";$("progressText").textContent=`已完成 ${n} / 4 週`;
+ $("levelCards").innerHTML=LEVELS.map((l,i)=>`<article class="level"><span class="week">WEEK 0${i+1} · ${l.place}</span>${progress.done.includes(i)?'<span class="stamp">✓ 已完成</span>':""}<h3>${l.name}</h3><p>${l.mission}</p><button data-level="${i}">${progress.done.includes(i)?"再次挑戰":"開始闖關"}</button></article>`).join("");
+ document.querySelectorAll("[data-level]").forEach(b=>b.addEventListener("click",()=>showIntro(Number(b.dataset.level))));
+}
+function showHomeModal(title,body){const old=$("homeModal");if(old)old.remove();const m=document.createElement("div");m.id="homeModal";m.style.cssText="position:fixed;inset:0;background:#10182ddd;display:grid;place-items:center;padding:16px;z-index:20";m.innerHTML=`<div class="panel"><h2>${title}</h2>${body}<button id="closeHomeModal">關閉</button></div>`;document.body.appendChild(m);$("closeHomeModal").onclick=()=>m.remove()}
+function showIntro(i){
+ const l=LEVELS[i];$("home").classList.add("hidden");$("game").classList.remove("hidden");
+ $("weekLabel").textContent=`WEEK 0${i+1}｜${l.name}`;$("taskLabel").textContent="任務：抵達檢查站";$("distanceLabel").textContent="0%";
+ showPanel(`<h2>${l.name}</h2><p>${l.intro}</p><p><strong>本關任務：</strong>${l.mission}</p><p class="tiny">提示：木箱、冰刺等障礙請跳過；低垂物請滑行。撞到障礙會退回一段距離，不會失去已完成的週次。</p><button id="startBtn">開始挑戰</button><button id="backBtn">回首頁</button>`);
+ $("startBtn").onclick=()=>startGame(i);$("backBtn").onclick=goHome;
+}
+function showPanel(html){$("panel").innerHTML=html;$("overlay").classList.remove("hidden")}
+function hidePanel(){$("overlay").classList.add("hidden")}
+function goHome(){cancelAnimationFrame(raf);game=null;clearKeys();$("game").classList.add("hidden");$("home").classList.remove("hidden");hidePanel();renderHome()}
+function makeObstacles(i){
+ const types=LEVELS[i].obstacles,arr=[];let x=500;
+ for(let n=0;n<types.length*3;n++){const type=types[n%types.length];arr.push({x,type,w:type==="lights"||type==="gate"?92:56,h:type==="spike"?74:type==="low"?40:58});x+=250+(n%3)*35}
+ return arr;
+}
+function startGame(i){
+ game={i,world:0,goal:3300,y:390,vy:0,onGround:true,slide:false,obstacles:makeObstacles(i),last:0,invulnerable:0,question:false};
+ hidePanel();clearKeys();draw();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);
+}
+function clearKeys(){for(const k in keys)keys[k]=false}
+function jump(){if(game&&game.onGround&&!game.question){game.vy=-14;game.onGround=false}}
+function collide(){
+ const p=game,px=150,py=p.slide?p.y+5:p.y-13,ph=p.slide?24:57,pw=p.slide?42:32;
+ for(const o of p.obstacles){const ox=o.x-p.world;if(ox<-100||ox>230)continue;
+  let oy,oh,ow=o.w;
+  if(o.type==="lights"||o.type==="low"){oy=350;oh=70}
+  else if(o.type==="icicle"){oy=295;oh=100}
+  else{oy=450-o.h;oh=o.h}
+  if(px+pw>ox+5&&px<ox+ow-5&&py+ph>oy+5&&py<oy+oh){
+   if(p.invulnerable<=0){p.world=Math.max(0,p.world-105);p.y=390;p.vy=0;p.onGround=true;p.invulnerable=35;return true}
+  }
+ }
+ return false;
+}
+function loop(t){
+ if(!game||game.question)return;
+ const p=game,dt=Math.min(((t-p.last)||16)/16,2);p.last=t;
+ // Runner moves forward automatically; left/right can slow down or speed up.
+ let speed=3.25;if(keys.right)speed=4.6;if(keys.left)speed=1.6;p.world+=speed*dt;
+ p.slide=keys.slide;
+ if(!p.onGround){p.vy+=.78*dt;p.y+=p.vy*dt;if(p.y>=390){p.y=390;p.vy=0;p.onGround=true}}
+ if(p.invulnerable>0)p.invulnerable-=dt;
+ collide();
+ $("distanceLabel").textContent=Math.min(100,Math.floor(p.world/p.goal*100))+"%";
+ draw();
+ if(p.world>=p.goal){askQuestion();return}
+ raf=requestAnimationFrame(loop);
+}
+function askQuestion(){
+ const p=game,l=LEVELS[p.i];p.question=true;cancelAnimationFrame(raf);
+ showPanel(`<h2>抵達檢查站！</h2><p>${l.question}</p><div class="answers">${l.answers.map((a,n)=>`<button data-answer="${n}">${a}</button>`).join("")}</div><div class="feedback" id="answerFeedback"></div>`);
+ document.querySelectorAll("[data-answer]").forEach(b=>b.onclick=()=>{
+  if(Number(b.dataset.answer)===l.correct){finishLevel()}
+  else{$("answerFeedback").textContent="答案不太對，再試一次！";b.disabled=true;b.style.opacity=".45"}
+ });
+}
+function finishLevel(){
+ const i=game.i,l=LEVELS[i];progress.done=[...new Set([...progress.done,i])].sort((a,b)=>a-b);progress.clues[i]=l.clue;save();renderHome();
+ showPanel(`<h2>本週挑戰完成！</h2><p>${l.clueLine}</p><p>把這個字記下來，最後一週後將四個字依序組合。</p><p class="tiny">完成進度已儲存在目前這個瀏覽器。</p><button id="returnBtn">回到週次地圖</button><button id="againBtn">再玩一次</button>`);
+ $("returnBtn").onclick=goHome;$("againBtn").onclick=()=>showIntro(i);
+}
+function draw(){
+ if(!game)return;const c=$("c"),ctx=c.getContext("2d"),l=LEVELS[game.i],W=960,H=540,cam=game.world;
+ ctx.fillStyle=l.sky;ctx.fillRect(0,0,W,H);
+ for(let n=0;n<90;n++){let x=((n*137-cam*.16)%1050+1050)%1050,y=(n*71)%275;ctx.fillStyle=game.i===3?"#fff0b0":"#ffffff";ctx.fillRect(x,y,4,4)}
+ for(let n=0;n<13;n++){let x=((n*150-cam*.28)%1250+1250)%1250-80;ctx.fillStyle=l.far;ctx.fillRect(x,315-(n%3)*28,100,180)}
+ ctx.fillStyle=l.ground;ctx.fillRect(0,450,W,90);ctx.fillStyle=l.accent;for(let x=0;x<W;x+=32)ctx.fillRect(x,450,18,7);
+ // Background decorations
+ for(let x=35-(cam*.55%155);x<W;x+=155){ctx.fillStyle=l.accent;ctx.fillRect(x,380,14,70);ctx.fillRect(x-12,390,38,8);ctx.fillRect(x-6,405,26,8)}
+ game.obstacles.forEach(o=>{const x=o.x-cam;if(x>-110&&x<W+110)drawObstacle(ctx,o,x)});
+ const gx=game.goal-cam;if(gx<W+100){ctx.fillStyle="#ffe39a";ctx.fillRect(gx,295,18,155);ctx.fillRect(gx-24,295,66,13);ctx.fillStyle="#bd4d50";ctx.fillRect(gx+4,318,10,31)}
+ // Player with simple blinking after collision
+ if(Math.floor(game.invulnerable/4)%2===0){
+  const px=150,py=game.y;
+  ctx.fillStyle="#18233f";ctx.fillRect(px-5,py+36,39,8);
+  if(game.slide){ctx.fillStyle="#bd4d50";ctx.fillRect(px,py+14,42,22);ctx.fillStyle="#ffe39a";ctx.fillRect(px+26,py+5,15,14)}
+  else{ctx.fillStyle="#bd4d50";ctx.fillRect(px,py,30,34);ctx.fillStyle="#ffe39a";ctx.fillRect(px+5,py-13,22,16);ctx.fillStyle="#18233f";ctx.fillRect(px+19,py-7,4,4);ctx.fillStyle="#47795c";ctx.fillRect(px+2,py+29,10,14);ctx.fillRect(px+19,py+29,10,14)}
+ }
+ ctx.fillStyle="#18233f";ctx.font="bold 16px monospace";ctx.fillText("KMSH",20,32);
+ ctx.fillStyle="#fff2d2";ctx.font="bold 13px monospace";ctx.fillText("JUMP OVER  ·  SLIDE UNDER",20,54);
+}
+function drawObstacle(ctx,o,x){
+ const y=450-o.h;
+ if(["box","icebox","jelly","gate"].includes(o.type)){
+  const col=o.type==="box"?"#9a603b":o.type==="icebox"?"#bdebf2":o.type==="jelly"?"#f28bb2":"#8b8fc2";
+  ctx.fillStyle=col;ctx.fillRect(x,y,o.w,o.h);ctx.strokeStyle="#18233f";ctx.lineWidth=6;ctx.strokeRect(x+2,y+2,o.w-4,o.h-4);
+  ctx.strokeStyle=o.type==="icebox"?"#fff":"#f8d69b";ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(x+7,y+7);ctx.lineTo(x+o.w-7,y+o.h-7);ctx.moveTo(x+o.w-7,y+7);ctx.lineTo(x+7,y+o.h-7);ctx.stroke();
+ }else if(o.type==="spike"||o.type==="crack"){
+  ctx.fillStyle=o.type==="spike"?"#e9ffff":"#bdebf2";ctx.strokeStyle="#2a5c79";ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(x,y+o.h);ctx.lineTo(x+o.w/2,y);ctx.lineTo(x+o.w,y+o.h);ctx.closePath();ctx.fill();ctx.stroke();
+ }else if(o.type==="snow"){
+  ctx.fillStyle="#fff";ctx.strokeStyle="#6e9db1";ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(x,y+o.h);ctx.lineTo(x+5,y+25);ctx.lineTo(x+22,y+9);ctx.lineTo(x+40,y+25);ctx.lineTo(x+o.w,y+o.h);ctx.closePath();ctx.fill();ctx.stroke();
+ }else if(o.type==="lights"||o.type==="low"){
+  ctx.fillStyle="#24324b";ctx.fillRect(x,350,o.w,9);for(let n=0;n<5;n++){ctx.fillStyle=["#f4c96b","#bd4d50","#73c9a0"][n%3];ctx.fillRect(x+n*19,359,10,15);ctx.fillRect(x+n*19+3,374,4,8)}
+ }else if(o.type==="icicle"){
+  ctx.fillStyle="#c9f7ff";ctx.strokeStyle="#39718e";ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(x,295);ctx.lineTo(x+o.w/2,295+o.h);ctx.lineTo(x+o.w,295);ctx.closePath();ctx.fill();ctx.stroke();
+ }else if(o.type==="candy"){
+  ctx.fillStyle="#fff";ctx.fillRect(x+12,y,25,o.h);ctx.fillStyle="#d94e62";for(let n=0;n<4;n++)ctx.fillRect(x+12,y+n*15,25,7);ctx.strokeStyle="#18233f";ctx.lineWidth=4;ctx.strokeRect(x+12,y,25,o.h);
+ }
+}
+function hold(id,key){const el=$(id);const down=e=>{e.preventDefault();keys[key]=true};const up=e=>{e.preventDefault();keys[key]=false};el.addEventListener("pointerdown",down);["pointerup","pointercancel","pointerleave"].forEach(ev=>el.addEventListener(ev,up))}
+hold("left","left");hold("right","right");hold("slide","slide");hold("jump","jump");
+$("jump").addEventListener("pointerdown",e=>{e.preventDefault();jump()});
+$("exitBtn").onclick=goHome;
+$("finalBtn").onclick=()=>{
+ const all=progress.done.length===4,clues=LEVELS.map((l,i)=>progress.done.includes(i)?l.clue:"＿");
+ showHomeModal("最終謎題",`<p>${all?"四週線索已集齊！依照週次順序排列四個字。":"完成四週關卡後，就能集齊所有字。"} </p><p style="font-size:25px;letter-spacing:7px;color:#a33e49;font-weight:900">${clues.join("　")}</p>${all?'<p><strong>最後答案：聖誕快樂</strong></p><p>請依活動公告方式提交答案。</p>':'<p class="tiny">每完成一週，就會解鎖一個字。</p>'}`);
+};
+$("resetBtn").onclick=()=>showHomeModal("重設本機進度",'<p>這會清除目前這台裝置、這個瀏覽器中的四週完成紀錄。若確定要清除，請按下方確認。</p><button id="confirmReset">確認重設</button>');
+$("adminBtn").onclick=()=>showHomeModal("管理功能說明",'<p>目前這份檔案是可遊玩的前端版本，並沒有真正的管理員登入或資料庫。</p><p>要正式啟用學校 Google 帳號登入、跨裝置同步、學生進度查詢、管理員權限及抽獎名單匯出，需要另外設定安全的雲端登入與資料庫，不能只靠 GitHub Pages。</p>');
+document.addEventListener("click",e=>{if(e.target.id==="confirmReset"){progress={done:[],clues:[]};save();renderHome();$("homeModal")?.remove()}});
+document.addEventListener("keydown",e=>{if(e.key==="ArrowLeft")keys.left=true;if(e.key==="ArrowRight")keys.right=true;if(e.key==="ArrowDown")keys.slide=true;if(e.key===" "||e.key==="ArrowUp"){e.preventDefault();jump()}});
+document.addEventListener("keyup",e=>{if(e.key==="ArrowLeft")keys.left=false;if(e.key==="ArrowRight")keys.right=false;if(e.key==="ArrowDown")keys.slide=false});
+window.addEventListener("blur",clearKeys);
+renderHome();
+})();
+</script>
+</body>
+</html>
